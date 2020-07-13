@@ -76,7 +76,7 @@ public class NovaSolicitacao extends AppCompatActivity {
         EditText titulo = (EditText) findViewById(R.id.inputTitulo);
         solicita.setTitulo(titulo.getText().toString());
 
-        EditText email = (EditText) findViewById(R.id.inputEmail);
+        EditText email = (EditText) findViewById(R.id.inputCep);
         solicita.setEmail(email.getText().toString());
 
         EditText desc = (EditText) findViewById(R.id.inputDesc);
@@ -98,8 +98,11 @@ public class NovaSolicitacao extends AppCompatActivity {
 
         Toast.makeText(this, "Latitude!" + solicita.getLatitude() + "Longitude!" + solicita.getLongitude(), Toast.LENGTH_SHORT).show();
 
+
+
        // solicita.save();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        solicita.setEmail(user.getEmail()); // adiciona o E-mail que ja foi usado para logar no sistema
         String chave = databaseReference.child(user.getUid()).child("solicitacao").push().getKey();
         solicita.setChave(chave);
         databaseReference.child(user.getUid()).child("solicitacao").child(chave).setValue(solicita);
