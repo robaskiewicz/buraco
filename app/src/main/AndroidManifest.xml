@@ -38,7 +38,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBU1cs4amyBTT5bcaD5Hu-7jP1i3kiH8JM" />
+            android:value="" />
         <meta-data
             android:name="DATABASE"
             android:value="buraco.db" />
