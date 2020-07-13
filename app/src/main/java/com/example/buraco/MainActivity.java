@@ -1,65 +1,66 @@
 package com.example.buraco;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnAlerta;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnAlerta = (Button)findViewById(R.id.btnAlerta);
-         btnAlerta.setOnClickListener(new View.OnClickListener() {
+
+        mAuth = FirebaseAuth.getInstance();
+
+        TextView textView = (TextView) findViewById(R.id.textNome);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String email = user.getEmail();
+            textView.setText(email);
+            String uid = user.getUid();
+        }
+
+    }
+
+
+    public void chamarNovaSolicitacao(View view){
+        Intent intent = new Intent(this, NovaSolicitacao.class);
+        startActivity(intent);
+    }
+
+    public void chamarMinhasSolicitacoes(View view){
+        Intent intent = new Intent(this, MinhasSolicitacoes.class);
+        startActivity(intent);
+    }
+
+    public void sair(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Deseja sair?").setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                try{
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage("991422929",null,"TESTE 123",null,null);
-                    Toast.makeText(MainActivity.this, "SMS Sent Successfully", Toast.LENGTH_SHORT).show();
-                }
-                catch (Exception e){
-                    Toast.makeText(MainActivity.this, "SMS Failed to Send, Please try again", Toast.LENGTH_SHORT).show();
-                }
+            public void onClick(DialogInterface dialog, int which) {
+                //FirebaseAuth.getInstance().signOut();
+                mAuth.signOut();
+                finish();
+            }
+        }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
             }
         });
-
+        builder.show();
     }
-
-    public void chamaTelaConfiguracoes(View view){
-        Intent intent = new Intent(this, Conf.class);
-        startActivity(intent);
-
-    }
-
-
-
-    public void acionaAlerta(View view){
-        /*Ler as configurações
-            - telefone
-            - mensagem
-            - email
-            - whatsapp
-            - sms
-            - localização > ligar gps epagar posição atual; (cadastrar tempo de envio localização)
-            -
-        */
-    }
-
-
-
 
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "121363102327",
+    "firebase_url": "https://buraco-98e57.firebaseio.com",
+    "project_id": "buraco-98e57",
+    "storage_bucket": "buraco-98e57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121363102327:android:201c5737bb74da45046472",
+        "android_client_info": {
+          "package_name": "com.example.buraco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "121363102327-qofgtviprfd6tsi3e6a0mam2eqct5vc0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.buraco",
+            "certificate_hash": "78b2580a79b8fc8594cb80c55b344971be06a02f"
+          }
+        },
+        {
+          "client_id": "121363102327-q9k5vrnbf9nd44pl4a1ikfl4vt7juv53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0AJ0oyk_oUvxfADBBOzRKrDjOzALMh9c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "121363102327-q9k5vrnbf9nd44pl4a1ikfl4vt7juv53.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
