@@ -37,6 +37,10 @@
         <activity android:name=".MinhasSolicitacoes" />
 
         <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value=""/>
+
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="" />
         <meta-data
