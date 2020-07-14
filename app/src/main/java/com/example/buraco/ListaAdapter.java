@@ -21,6 +21,7 @@ public class ListaAdapter extends BaseAdapter {
     Context context;
     List<Solicita> solicitacoes;
 
+
     public ListaAdapter(Context context, List<Solicita> solicitacoes) {
         this.context = context;
         this.solicitacoes = solicitacoes;

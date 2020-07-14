@@ -31,21 +31,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MinhasSolicitacoes extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class MinhasSolicitacoes extends AppCompatActivity {
 
-    ListView listView;
+
     private DatabaseReference databaseReference;
     public List<Solicita> solicitacoes= new ArrayList<>();
-    private FirebaseAuth mAuth;
     private FirebaseUser user;
 
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minhas_solicitacoes);
-
-        mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child("solicitacao");
@@ -59,20 +57,17 @@ public class MinhasSolicitacoes extends AppCompatActivity implements AdapterView
                 for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
 
                     Solicita sol = new Solicita();
-                    String chave = databaseReference.child(user.getUid()).child("solicitacao").push().getKey();
-                    String chave3 = (String) messageSnapshot.child("chave").getValue();
+
+                    String chave = (String) messageSnapshot.child("chave").getValue();
                     String titulo = (String) messageSnapshot.child("titulo").getValue();
 
                     i= i+1;
                     sol.setId(Long.valueOf(i));
                     sol.setTitulo(titulo);
-                    sol.setChave(chave3);
+                    sol.setChave(chave);
 
                     solicitacoes.add(sol);
-
                 }
-
-
                 carregaListaMinhasSolicitacoes();
             }
 
@@ -86,52 +81,58 @@ public class MinhasSolicitacoes extends AppCompatActivity implements AdapterView
         });
 
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+
+    }
+
+    public void chamarDetalhes(View view) {
+        Intent itt = new Intent(this, Detalhes.class);
+        startActivity(itt);
+    }
+
+
+
+//    @Override
+//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//        Log.i("LOGGGGGGGGGGGGGGG", (String) listView.getItemAtPosition(position));
+//
+//
+//        Intent intent = new Intent(this, Detalhes.class);
+//        intent.putExtra("ID_SOLICITA", listView.getItemAtPosition(position).toString());
+//        startActivity(intent);
+//
+////        Log.i("LOGGGGGGGGGGGGGGG", (String) parent.getSelectedItem());
+////        Solicita solicita = (Solicita) parent.getSelectedItem();
+////        Intent intent = new Intent(this, Detalhes.class);
+////        intent.putExtra("ID_SOLICITA",solicita.getId());
+////        startActivity(intent);
+//    }
+//
+//
+//    @Override
+//    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//        final Solicita solicita = (Solicita) parent.getItemAtPosition(position);
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setMessage("Deseja excluir essa Solicitação?").setPositiveButton("Sim", new DialogInterface.OnClickListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Solicita soli = (Solicita) parent.getItemAtPosition(position);
-//                Intent intent = new Intent(this, Detalhes.class);
-//                intent.putExtra("ID_SOLICITA", soli.getId());
-//                startActivity(intent);
-//
-//                Log.e(null, String.valueOf(position)); //apenas para setar log da posição
+//            public void onClick(DialogInterface dialog, int which) {
+//                //remover
+//                Solicita.delete(solicita);
+//                carregaListaMinhasSolicitacoes();
 //            }
+//        }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
 //
+//            }
 //        });
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Solicita soli = (Solicita) parent.getItemAtPosition(position);
-            Intent intent = new Intent(this, Detalhes.class);
-            intent.putExtra("ID_SOLICITA", soli.getChave());
-            startActivity(intent);
-
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Solicita solicita = (Solicita) parent.getItemAtPosition(position);
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Deseja excluir essa Solicitação?").setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //remover
-                Solicita.delete(solicita);
-                carregaListaMinhasSolicitacoes();
-            }
-        }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
-
-        return true;
-    }
+//        builder.show();
+//
+//        return true;
+//    }
 
 
 
@@ -141,11 +142,23 @@ public class MinhasSolicitacoes extends AppCompatActivity implements AdapterView
 //        listView.setAdapter(adapter);
 
 
+        listView = (ListView) findViewById(R.id.listViewRegistros);
 
-        ListView listView = (ListView) findViewById(R.id.listViewRegistros);
-        ListaAdapter adapter = new ListaAdapter(this, solicitacoes);
+        ListaAdapter adapter = new ListaAdapter(MinhasSolicitacoes.this, solicitacoes);
         listView.setAdapter(adapter);
-    }
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Log.i("LOGGGGGGGGGGGGGGG",  listView.getItemAtPosition(position).toString());
+
+                Solicita sol = (Solicita) listView.getItemAtPosition(position);
+
+                Intent intent = new Intent(MinhasSolicitacoes.this, Detalhes.class);
+                intent.putExtra("ID_SOLICITA", sol.getChave());
+                startActivity(intent);
+            }
+        });
+    }
 
 }

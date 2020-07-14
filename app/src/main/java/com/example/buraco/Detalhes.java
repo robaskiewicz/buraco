@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +29,19 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -41,61 +52,86 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "";
     ImageView imageView1 ;
 
+
+
+    private DatabaseReference databaseReference;
+    public List<Solicita> solicitacoes= new ArrayList<>();
+    private FirebaseUser user;
+
+    private Solicita sol = new Solicita();
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("ID_SOLICITA")) {
 
-            Long id = bundle.getLong("ID_SOLICITA");
-            solicita = Solicita.findById(Solicita.class, id);
+            //pega a chave do itemPara visualizar
+            String chave =  bundle.getString("ID_SOLICITA");
 
-            TextView titulo = (TextView) findViewById(R.id.textTitulo);
-            titulo.setText(solicita.getTitulo());
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            //pega o caminho dos nos no FireBase diretamente na chave do Item
+            databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child("solicitacao").child(chave);
 
-            TextView data = (TextView) findViewById(R.id.textData);
-            DateFormat datinha = new SimpleDateFormat("dd/MM/yyyy");
-            data.setText(datinha.format(solicita.getDataCadastro()));
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-            TextView descricao = (TextView) findViewById(R.id.textDescricao);
-            descricao.setText(solicita.getDescricao());
+                    TextView titulo = (TextView) findViewById(R.id.textTitulo);
+                    titulo.setText((String) dataSnapshot.child("titulo").getValue());
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 3;
-            if (solicita.getImagem1() != null && solicita.getImagem1().length() > 2) {
-                Bitmap bitmap = BitmapFactory.decodeFile(solicita.getImagem1(), options);
-                ImageView imageView1 = (ImageView) findViewById(R.id.imageView1);
-                imageView1.setBackground(null);
-                imageView1.setImageBitmap(bitmap);
-            }
+                    TextView desc = (TextView) findViewById(R.id.textDescricao);
+                    desc.setText((String) dataSnapshot.child("descricao").getValue());
+
+                    TextView cep = (TextView) findViewById(R.id.textCep);
+                    cep.setText((String) dataSnapshot.child("cep").getValue());
+
+                    String imagem1 = (String) dataSnapshot.child("imagem1").getValue();
+                    String imagem2 = (String) dataSnapshot.child("imagem2").getValue();
+
+                    Double loclongitude = (Double) dataSnapshot.child("longitude").getValue();
+                    Double loclatitude = (Double) dataSnapshot.child("latitude").getValue();
+
+                    sol.setTitulo((String) dataSnapshot.child("titulo").getValue());
+                    sol.setDescricao((String) dataSnapshot.child("descricao").getValue());
 
 
-            if (solicita.getLongitude() != null && solicita.getLongitude() != null) {
-                Bundle mapViewBundle = null;
-                if (savedInstanceState != null) {
-                    mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+                    if (loclongitude != null && loclatitude != null) {
+                    Bundle mapViewBundle = null;
+                        if (savedInstanceState != null) {
+                            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+                        }
+                            latitude = loclatitude;
+                            longitude = loclongitude;
+
+                            mapView = findViewById(R.id.mapView);
+                            mapView.onCreate(mapViewBundle);
+                            mapView.getMapAsync(Detalhes.this);
+                    }
+
+//                    BitmapFactory.Options options = new BitmapFactory.Options();
+//                    options.inSampleSize = 3;
+//                    if (imagem1 != null && imagem1.length() > 2) {
+//                        Bitmap bitmap = BitmapFactory.decodeFile(imagem1, options);
+//                         imageView1 = (ImageView) findViewById(R.id.imageView1);
+//
+//                        imageView1.setImageBitmap(bitmap);
+//                    }
                 }
 
-                latitude = solicita.getLatitude();
-                longitude = solicita.getLongitude();
 
-                Toast.makeText(this, "Latitude!" +  solicita.getLatitude() + "Longitude!" + solicita.getLongitude(), Toast.LENGTH_SHORT).show();
-
-
-                mapView = findViewById(R.id.mapView);
-                mapView.onCreate(mapViewBundle);
-                mapView.getMapAsync(this);
-            }
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    //Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
         }
-
-
     }
 
     public void enviarEmail(View view) {
-        Log.i("Send email", "");
-
         String[] TO = {"emailQueVaiReceber@gmail.com"};
 //        String[] CC = {"micherobask@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -104,13 +140,13 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
 
         emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
 //        emailIntent.putExtra(Intent.EXTRA_CC, CC);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, solicita.getTitulo());
-        emailIntent.putExtra(Intent.EXTRA_TEXT, solicita.getDescricao());
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, sol.getTitulo());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, sol.getDescricao());
 
         try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            startActivity(Intent.createChooser(emailIntent, "Enviar mail..."));
             finish();
-            Toast.makeText(this, "Finished sending email...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Envio de e-mail concluído...", Toast.LENGTH_SHORT).show();
 
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(Detalhes.this,

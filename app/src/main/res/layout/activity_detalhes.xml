@@ -63,10 +63,10 @@
         android:id="@+id/imageView3"
         android:layout_width="115dp"
         android:layout_height="101dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="76dp"
         android:onClick="verImagem"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.202"
+        app:layout_constraintHorizontal_bias="0.054"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textDescricao"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
@@ -83,5 +83,22 @@
         app:layout_constraintTop_toBottomOf="@+id/textDescricao"
         app:layout_constraintVertical_bias="0.1"
         app:srcCompat="@android:drawable/ic_dialog_email" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CEP:"
+        app:layout_constraintBottom_toTopOf="@+id/textDescricao"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:layout_editor_absoluteX="98dp" />
+
+    <TextView
+        android:id="@+id/textCep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        tools:layout_editor_absoluteY="74dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
