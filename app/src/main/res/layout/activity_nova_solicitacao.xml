@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D8D8D8"
     tools:context=".NovaSolicitacao">
 
     <Button
@@ -52,8 +53,9 @@
     <EditText
         android:id="@+id/inputTitulo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="46dp"
         android:layout_marginTop="44dp"
+        android:background="#FFFFFF"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,6 +67,7 @@
         android:layout_width="214dp"
         android:layout_height="46dp"
         android:layout_marginTop="40dp"
+        android:background="#FFFFFF"
         android:ems="10"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,6 +79,7 @@
         android:layout_width="322dp"
         android:layout_height="116dp"
         android:layout_marginTop="56dp"
+        android:background="#FFFFFF"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,5 +1,6 @@
 package com.example.buraco;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -12,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +40,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,11 +69,16 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseUser user;
 
     private Solicita sol = new Solicita();
+    StorageReference mStorageRef;
+    private String urlll ="";
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes);
+
+        imageView1 = (ImageView) findViewById(R.id.imageView3);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("ID_SOLICITA")) {
@@ -111,15 +126,50 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
                             mapView.getMapAsync(Detalhes.this);
                     }
 
-//                    BitmapFactory.Options options = new BitmapFactory.Options();
-//                    options.inSampleSize = 3;
-//                    if (imagem1 != null && imagem1.length() > 2) {
-//                        Bitmap bitmap = BitmapFactory.decodeFile(imagem1, options);
-//                         imageView1 = (ImageView) findViewById(R.id.imageView1);
-//
-//                        imageView1.setImageBitmap(bitmap);
-//                    }
-                }
+                    // decodifica a imagem vindo do firebase
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    byte[] imageBytes = outputStream.toByteArray();
+
+                    urlll = dataSnapshot.child("imagem1").getValue().toString();
+                    imageBytes = Base64.decode(dataSnapshot.child("imagem1").getValue().toString(), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                    imageView1.setImageBitmap(bitmap);
+
+
+
+                    ImageView btnSend = (ImageView) findViewById(R.id.imageView3);
+                    btnSend .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Dialog builder = new Dialog(Detalhes.this);
+                            builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            builder.getWindow().setBackgroundDrawable(
+                                    new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                }
+                            });
+                            imageView1 = new ImageView(Detalhes.this);
+
+                            // decodifica a imagem vindo do firebase
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            byte[] imageBytes = outputStream.toByteArray();
+                            imageBytes = Base64.decode(urlll, Base64.DEFAULT);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                            imageView1.setImageBitmap(bitmap);
+                            builder.addContentView(imageView1, new RelativeLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT));
+                            builder.show();
+                        }
+                    });
+
+
+
+                    }
 
 
                 @Override
@@ -129,6 +179,8 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
                 }
             });
         }
+
+
     }
 
     public void enviarEmail(View view) {
@@ -164,25 +216,25 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
         gmap.addMarker(markerOptions);
     }
 
-    public void verImagem(View view) {
-        Dialog builder = new Dialog(this);
-        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        builder.getWindow().setBackgroundDrawable(
-                new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-            }
-        });
-        ImageView imageView = new ImageView(this);
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 3;
-        Bitmap bitmap = BitmapFactory.decodeFile(solicita.getImagem1(), options);
-        imageView.setImageBitmap(bitmap);
-        builder.addContentView(imageView, new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        builder.show();
-    }
+//    public void verImagem(View view) {
+//        Dialog builder = new Dialog(this);
+//        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        builder.getWindow().setBackgroundDrawable(
+//                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//            }
+//        });
+//         imageView1 = new ImageView(this);
+//
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inSampleSize = 3;
+//        Bitmap bitmap = BitmapFactory.decodeFile(solicita.getImagem1(), options);
+//        imageView1.setImageBitmap(bitmap);
+//        builder.addContentView(imageView1, new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.MATCH_PARENT));
+//        builder.show();
+//    }
 }

@@ -71,8 +71,6 @@ public class MinhasSolicitacoes extends AppCompatActivity {
                 carregaListaMinhasSolicitacoes();
             }
 
-
-
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
@@ -80,7 +78,44 @@ public class MinhasSolicitacoes extends AppCompatActivity {
             }
         });
 
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child("solicitacao");
+//
+//
+//
+//        databaseReference.child("users/me/profile.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//                // Got the download URL for 'users/me/profile.png'
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                // Handle any errors
+//            }
+//        });
 
+//        databaseReference.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                // Aqui caso de sucesso no upload...
+//                // Você captura a URL da imagem pra poder salvar
+//                String urlFoto = taskSnapshot.getDownloadUrl().toString();
+//
+//                // Aqui com o caminho da imagem 'em mãos', vc seta lá no Database
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                // Aqui em caso de falha...
+//            }
+//        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//                // E aqui se vc quiser implementar uma barra de progresso p/ o upload...
+//            }
+//        });
 
 
 
