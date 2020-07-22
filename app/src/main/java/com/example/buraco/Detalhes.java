@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -55,21 +56,17 @@ import java.util.List;
 
 public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
 
-    Solicita solicita = null;
+    private Solicita solicita = null;
     private MapView mapView;
     private GoogleMap gmap;
-    Double latitude, longitude;
+    private Double latitude, longitude;
     private static final String MAP_VIEW_BUNDLE_KEY = "";
-    ImageView imageView1 ;
-
-
-
+    private ImageView imageView1 ;
     private DatabaseReference databaseReference;
     public List<Solicita> solicitacoes= new ArrayList<>();
     private FirebaseUser user;
 
     private Solicita sol = new Solicita();
-    StorageReference mStorageRef;
     private String urlll ="";
 
 
@@ -100,17 +97,23 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
                     TextView desc = (TextView) findViewById(R.id.textDescricao);
                     desc.setText((String) dataSnapshot.child("descricao").getValue());
 
+//                    TextView data = (TextView) findViewById(R.id.textData);
+//                    data.setText((String) dataSnapshot.child("dataCadastro").getValue());
+
                     TextView cep = (TextView) findViewById(R.id.textCep);
                     cep.setText((String) dataSnapshot.child("cep").getValue());
 
                     String imagem1 = (String) dataSnapshot.child("imagem1").getValue();
-                    String imagem2 = (String) dataSnapshot.child("imagem2").getValue();
 
                     Double loclongitude = (Double) dataSnapshot.child("longitude").getValue();
                     Double loclatitude = (Double) dataSnapshot.child("latitude").getValue();
 
                     sol.setTitulo((String) dataSnapshot.child("titulo").getValue());
                     sol.setDescricao((String) dataSnapshot.child("descricao").getValue());
+                    sol.setLatitude((Double) dataSnapshot.child("latitude").getValue());
+                    sol.setLongitude((Double) dataSnapshot.child("longitude").getValue());
+
+                    sol.setImagem1(imagem1);
 
 
                     if (loclongitude != null && loclatitude != null) {
@@ -131,6 +134,7 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
                     byte[] imageBytes = outputStream.toByteArray();
 
                     urlll = dataSnapshot.child("imagem1").getValue().toString();
+
                     imageBytes = Base64.decode(dataSnapshot.child("imagem1").getValue().toString(), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
@@ -184,21 +188,26 @@ public class Detalhes extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     public void enviarEmail(View view) {
-        String[] TO = {"emailQueVaiReceber@gmail.com"};
+
+        String[] TO = {"michelrobask@gmail.com"};
 //        String[] CC = {"micherobask@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");
+//        emailIntent.setType("image/jpeg");
 
         emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
 //        emailIntent.putExtra(Intent.EXTRA_CC, CC);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, sol.getTitulo());
-        emailIntent.putExtra(Intent.EXTRA_TEXT, sol.getDescricao());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "DESCRIÇÃO:" + sol.getDescricao());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "CEP:" + sol.getCep());
+        String localidadeGps = "Buraco nessa Localização: http://maps.google.com/maps?q=" + sol.getLatitude().toString() + "," + sol.getLongitude().toString();
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "LOCALIZAÇÃO:" + localidadeGps);
 
         try {
             startActivity(Intent.createChooser(emailIntent, "Enviar mail..."));
             finish();
-            Toast.makeText(this, "Envio de e-mail concluído...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Envio de e-mail...", Toast.LENGTH_SHORT).show();
 
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(Detalhes.this,

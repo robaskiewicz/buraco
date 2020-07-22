@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class NovaSolicitacao extends AppCompatActivity {
@@ -62,7 +63,7 @@ public class NovaSolicitacao extends AppCompatActivity {
         }
 
         imageView1 = (ImageView) findViewById(R.id.imageView1);
-        imageView2 = (ImageView) findViewById(R.id.imageView2);
+//        imageView2 = (ImageView) findViewById(R.id.imageView2);
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
     }
@@ -76,11 +77,11 @@ public class NovaSolicitacao extends AppCompatActivity {
         EditText titulo = (EditText) findViewById(R.id.inputTitulo);
         solicita.setTitulo(titulo.getText().toString());
 
-        EditText email = (EditText) findViewById(R.id.inputCep);
-        solicita.setEmail(email.getText().toString());
-
         EditText desc = (EditText) findViewById(R.id.inputDesc);
         solicita.setDescricao(desc.getText().toString());
+
+        EditText cep = (EditText) findViewById(R.id.inputCep);
+        solicita.setCep(cep.getText().toString());
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -153,11 +154,12 @@ public class NovaSolicitacao extends AppCompatActivity {
                             imageView1.setImageBitmap(bitmap);
                             imageView1.setBackground(null);
                             solicita.setImagem1(fotoString);
-                        }else if(foto==2){
-                            imageView2.setImageBitmap(bitmap);
-                            imageView2.setBackground(null);
-                            solicita.setImagem2(fotoString);
                         }
+//                        else if(foto==2){
+//                            imageView2.setImageBitmap(bitmap);
+//                            imageView2.setBackground(null);
+//                            solicita.setImagem2(fotoString);
+//                        }
 
                     }catch (Exception i){
                         Log.e("NovaSolicitacao", "DEU ERRO!!!!");
@@ -197,31 +199,31 @@ public class NovaSolicitacao extends AppCompatActivity {
     }
 
     public void chamarCamera2(View view){
-        foto = 2;
-        chamarCamera();
+//        foto = 2;
+//        chamarCamera();
     }
 
 
     protected void enviarEmail() {
-        Log.i("Send email", "");
-
-        String[] TO = {"emailQueVaiReceber@gmail.com"};
+        String[] TO = {"michelrobask@gmail.com"};
 //        String[] CC = {"micherobask@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");
-
-
+//        emailIntent.setType("image/jpeg");
 
         emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
 //        emailIntent.putExtra(Intent.EXTRA_CC, CC);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, solicita.getTitulo());
-        emailIntent.putExtra(Intent.EXTRA_TEXT, solicita.getDescricao());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "DESCRIÇÃO:" +solicita.getDescricao());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "CEP:" +solicita.getCep());
+        String localidadeGps = "Buraco nessa Localização: http://maps.google.com/maps?q=" + solicita.getLatitude().toString() + "," + solicita.getLongitude().toString();
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "LOCALIZAÇÃO:" + localidadeGps);
 
         try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            startActivity(Intent.createChooser(emailIntent, "Enviar mail..."));
             finish();
-            Toast.makeText(this, "Finished sending email...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Envio de e-mail...", Toast.LENGTH_SHORT).show();
 
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(NovaSolicitacao.this,

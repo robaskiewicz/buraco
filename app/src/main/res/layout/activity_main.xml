@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
 
@@ -49,7 +50,7 @@
         android:id="@+id/imageButton2"
         android:layout_width="46dp"
         android:layout_height="46dp"
-        android:hapticFeedbackEnabled="false"
+        android:hapticFeedbackEnabled="true"
         android:onClick="sair"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,13 +61,12 @@
         app:srcCompat="@drawable/sair"
         tools:ignore="VectorDrawableCompat" />
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
-        ads:adSize="BANNER"
-        ads:adUnitId=""
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
